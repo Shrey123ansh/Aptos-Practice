@@ -1,6 +1,7 @@
-module 0x42::Storage{
+module 0x42::Storages{
     use std::signer;
-    // use Sender::Storage;
+
+    const ERROR: u64 = 101;
 
     struct Storage<T: store>has key{
         val: T,
@@ -8,7 +9,7 @@ module 0x42::Storage{
 
     fun store<T:store>(account: &signer,val: T){
         let addr = signer::address_of(account);
-        assert!(!exists<Storage<T>>(addr),101);
+        assert!(!exists<Storage<T>>(addr),ERROR);
         let to_store = Storage{
             val,
         };
@@ -17,15 +18,17 @@ module 0x42::Storage{
 
     public fun get<T: store>(account: &signer):T acquires Storage{
         let addr = signer::address_of(account);
-        assert!(exists<Storage<T>>(addr),102);
+        assert!(exists<Storage<T>>(addr),ERROR);
         let Storage{val} = move_from<Storage<T>>(addr);
         val
     }
 
-///// OR /////
 
-    // fun store_bytes(account: signer,val: vector<u8>){
-    //     Storage::store(&account,val);
-    // }
+    #[test(account=@0x123)]
+    fun test_store_u128(account: signer) acquires Storage{
+        let value: u128 = 100;
+        store(&account,value);
+        assert!(value == get<u128>(&account),ERROR)
+    }
 
 }
