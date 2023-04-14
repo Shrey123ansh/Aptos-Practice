@@ -1,5 +1,5 @@
 /// This module defines a minimal and generic Coin and Balance.
-module 0x42::BasicCoins{
+module 0x76::BasicCoins{
 
     use std::signer;
 
@@ -40,12 +40,12 @@ module 0x42::BasicCoins{
         exists<Balance>(acc_addr)
     }
 
-    public fun balance_of(owner: address): u64 acquires Balance {
+     public fun balance(owner: address): u64 acquires Balance {
         borrow_global<Balance>(owner).coins.val
     }
 
     public fun deposit(acc_addr: address,coins:Coins) acquires Balance{
-        let balance = balance_of(acc_addr);
+        let balance = balance(acc_addr);
         assert!(balance_exists(acc_addr),ERR_BALANCE_NOT_EXISTS);
         let balance_ref = &mut borrow_global_mut<Balance>(acc_addr).coins.val;
         let Coins{val} = coins;
@@ -55,7 +55,7 @@ module 0x42::BasicCoins{
 
     public fun withdraw(acc: address,value : u64) : Coins acquires Balance{
         assert!(balance_exists(acc),ERR_BALANCE_NOT_EXISTS);
-        let balance = balance_of(acc);
+        let balance = balance(acc);
         assert!(balance >= value, EINSUFFICIENT_BALANCE);
         let balance_ref = &mut borrow_global_mut<Balance>(acc).coins.val;
         *balance_ref = balance - value;
@@ -76,10 +76,10 @@ module 0x42::BasicCoins{
         let coins_10 = mint(10);
         create_balancce(&acc);
         deposit(acc_addr,coins_10);
-        assert!(balance_of(acc_addr)==10,EINSUFFICIENT_BALANCE);
+        assert!(balance(acc_addr)==10,EINSUFFICIENT_BALANCE);
 
         let coins_5 = withdraw(acc_addr, 5);
-        assert!(balance_of(acc_addr)==5,EALREADY_HAS_BALANCE);
+        assert!(balance(acc_addr)==5,EALREADY_HAS_BALANCE);
 
         burn(coins_5);
     }
