@@ -8,3 +8,4 @@ AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir 
 [addresses]
 my_addrx = "0x42"
 std = "0x1"
+stake__balance = "0x123"
